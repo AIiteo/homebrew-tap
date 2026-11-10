@@ -1,0 +1,24 @@
+name: Bump cask
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update version and sha256 from the appcast
+        run: |
+          set -euo pipefail
+          latest=$(curl -fsSL https://downloads.hoardless.app/appcast.xml | grep -o 'sparkle:shortVersionString>[0-9.]*' | head -1 | cut -d'>' -f2)
+          current=$(grep -o 'version "[0-9.]*"' Casks/hoardless.rb | cut -d'"' -f2)
+          if [ -z "$latest" ] || [ "$latest" = "$current" ]; then echo "up to date ($current)"; exit 0; fi
+          sha=$(curl -fsSL "https://downloads.hoardless.app/Hoardless-${latest}.dmg" | sha256sum | cut -d' ' -f1)
+          sed -i "s/version \"$current\"/version \"$latest\"/; s/sha256 \"[0-9a-f]*\"/sha256 \"$sha\"/" Casks/hoardless.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(cask): bump hoardless to $latest"
+          git push
