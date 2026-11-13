@@ -1,6 +1,6 @@
 cask "hoardless" do
-  version "1.11.0"
-  sha256 "7cc34395d07c43bf9b68a88def297a652d3c7e679ae185b0d34a5b5dcea76713"
+  version "1.12.0"
+  sha256 "7d3008522d064b4346a50a012d9439df3522bb21141d4bc33aef0ca4f59a06da"
 
   url "https://downloads.hoardless.app/Hoardless-#{version}.dmg"
   name "Hoardless"
